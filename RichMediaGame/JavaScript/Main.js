@@ -17,8 +17,8 @@ var app = app || {};
  */
 app.main = {
 	//  properties
-    WIDTH : 640, 
-    HEIGHT: 480,
+    WIDTH : 800, 
+    HEIGHT: 600,
     canvas: undefined,
     ctx: undefined,
    	lastTime: 0, // used by calculateDeltaTime() 
@@ -43,10 +43,12 @@ app.main = {
 
 	//more properties
 	tiles: [],
-	numDivs: 2,
+	numDivs: 0,
 	paused: false,
 	animationID: 0,
     openTile: null, //variable for us to have a reference to the open tile space
+    
+    //var img : new Image();
 
     
     
@@ -93,31 +95,51 @@ app.main = {
 	 	var dt = this.calculateDeltaTime();
 	 	 
 	 	// 4) UPDATE
-	 	
-        
-        
-        
-	 	
+	 	//update based on gameState
+        if(this.gameState == this.GAME_STATE.MAIN) //MAIN MENU
+        {
+            
+        }
+        else if(this.gameState == this.GAME_STATE.SETTINGS) //GAME SETTINGS MENU
+        {
+                
+        }
+        else
+        {
+            
+        }
+
 		// 5) DRAW	
 		// i) draw background
 		this.ctx.fillStyle = "black"; 
 		this.ctx.fillRect(0,0,this.WIDTH,this.HEIGHT); 
-	
-		// ii) draw circles
-		this.ctx.globalAlpha = 0.9;
-		this.drawTiles(this.ctx);
-	
-		// iii) draw HUD
-		this.ctx.globalAlpha = 1.0;
-		this.drawHUD(this.ctx);
-		
-		
-		// iv) draw debug info
-		if (this.debug){
-			// draw dt in bottom right corner
-			this.fillText("dt: " + dt.toFixed(3), this.WIDTH - 150, this.HEIGHT - 10, "18pt courier", "white");
-		}
-		
+        
+        //draw based on gameState
+        if(this.gameState == this.GAME_STATE.MAIN) //MAIN MENU
+        {
+            //draw the main menu
+            this.drawMainMenu(this.ctx);
+        }
+        else if(this.gameState == this.GAME_STATE.SETTINGS) //GAME SETTINGS MENU
+        {
+                
+        }
+        else //GAME ITSELF
+        {
+            // ii) draw tiles
+            this.ctx.globalAlpha = 0.9;
+            this.drawTiles(this.ctx);
+
+            // iii) draw HUD
+            this.ctx.globalAlpha = 1.0;
+            this.drawHUD(this.ctx);
+
+            // iv) draw debug info
+            if (this.debug){
+                // draw dt in bottom right corner
+                this.fillText("dt: " + dt.toFixed(3), this.WIDTH - 150, this.HEIGHT - 10, "18pt courier", "white");
+            }
+        }
 	},
 	
 	
@@ -152,7 +174,7 @@ app.main = {
 		//a func that we will soon use as a methods
 		var drawTile = function(ctx)
 		{
-			//draw tile
+
 		};
 
 		var array = [];
@@ -299,7 +321,26 @@ app.main = {
 		} // end if
 		
 		ctx.restore(); // NEW
-	}
+	},
+
+    //draw main menu
+    drawMainMenu: function(ctx)
+    {
+        ctx.save();
+        
+        //draw logo
+        ctx.strokeStyle = "white";
+        ctx.fillStyle = "white";
+        ctx.strokeRect(100, 100, 600, 100); //box out where logo would go
+        
+        //draw play button
+        ctx.strokeRect((this.WIDTH / 2) - 100, (this.HEIGHT / 2), 200, 75);
+        
+        //draw names
+        ctx.fillText("Matt Dieselman and Joel Shuart", (this.WIDTH / 2) - 70, 500);
+        
+        ctx.restore();
+    }
     
     
 }; // end app.main
