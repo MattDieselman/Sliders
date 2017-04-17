@@ -38,7 +38,8 @@ app.main = {
         PLAY : 2,
         MOVING : 3,
 		PAUSE : 4,
-        SOLVED : 5
+        SOLVED : 5,
+        INITIALIZE: 6
 	}),
 
 	//more properties
@@ -47,6 +48,9 @@ app.main = {
 	paused: false,
 	animationID: 0,
     openTile: null, //variable for us to have a reference to the open tile space
+    
+    //buttons
+    btnPlay: null;
     
     //var img : new Image();
 
@@ -334,12 +338,55 @@ app.main = {
         ctx.strokeRect(100, 100, 600, 100); //box out where logo would go
         
         //draw play button
-        ctx.strokeRect((this.WIDTH / 2) - 100, (this.HEIGHT / 2), 200, 75);
+        btnPlay.draw(ctx);
         
         //draw names
         ctx.fillText("Matt Dieselman and Joel Shuart", (this.WIDTH / 2) - 70, 500);
         
         ctx.restore();
+    },
+    
+    //check if a given button is clicked
+    // [mouse is maouse data] [button is an object (x, y, width, height, function)]
+    checkButtonClicked: function(mouse, button)
+    {
+        //AABB
+        if(mouse.x >= button.x && mouse.x <= (button.x + button.width) && mouse.y >= button.y && mouse.y <= (button.y + button.height))
+        {
+            //run whatever function the button is supposed todo
+            button.clicked();
+        }
+    },
+    
+    //makes a button with a specific function
+    //[xy pos][width and height of button] [text on the button] [function for the button todo]
+    makeButton: function(xPos, yPos, width, height, text, func)
+    {
+        //drawing function
+        var drawButton = function(ctx)
+        {
+            //draw the button itself
+            ctx.strokeRect(this.x, this.y, this.width, this.height);
+            
+            //draw text inside the button
+            ctx.fillText(text, this.x, (this.y + (this.height / 2)), this.width);
+        }
+        
+        //create button obj
+        var btn = {};
+        
+        //add proprties
+        btn.x = xPos;
+        btn.y = yPos;
+        btn.width = width;
+        btn.height = height;
+        
+        //hook up draw button and function for what its supposed todo
+        btn.draw = drawButton(ctx);
+        btn.clicked = func;
+        
+        //return the button we just made
+        return btn;
     }
     
     
