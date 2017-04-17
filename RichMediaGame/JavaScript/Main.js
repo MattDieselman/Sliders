@@ -74,7 +74,7 @@ app.main = {
 		this.canvas.onmousedown = this.doMousedown;
         
         //create play button
-        this.btnPlay = this.makeButton((this.WIDTH / 2), (this.HEIGHT / 2), 200, 100, "PLAY", this.nextGameState);
+        this.btnPlay = this.makeButton(((this.WIDTH / 2) - 50), (this.HEIGHT / 2), 100, 40, "PLAY", this.nextGameState);
 
 		//scramble tiles
 		this.reset();
@@ -103,7 +103,8 @@ app.main = {
 	 	//update based on gameState
         if(this.gameState == this.GAME_STATE.MAIN) //MAIN MENU
         {
-            
+            //check if we clicked the play button
+            //this.checkButtonClicked(getMouse(e), this.btnPlay);
         }
         else if(this.gameState == this.GAME_STATE.SETTINGS) //GAME SETTINGS MENU
         {
@@ -260,6 +261,7 @@ app.main = {
 		var mouse = getMouse(e);
 		
 		app.main.checkTileClicked(mouse);
+        app.main.checkButtonClicked(mouse, app.main.btnPlay);
 	},
 
     //checks mouse pos against a tile
@@ -366,11 +368,16 @@ app.main = {
         //drawing function
         var drawButton = function(ctx)
         {
+            ctx.save();
+            
             //draw the button itself
             ctx.strokeRect(this.x, this.y, this.width, this.height);
             
             //draw text inside the button
-            ctx.fillText(text, this.x, (this.y + (this.height / 2)), this.width);
+            ctx.font = "24pt courier";
+            ctx.fillText(this.text, (this.x + (this.width / 10)), (this.y + (this.height - (this.height / 4))), this.width);
+            
+            ctx.restore();
         }
         
         //create button obj
@@ -379,8 +386,9 @@ app.main = {
         //add proprties
         btn.x = xPos;
         btn.y = yPos;
-        btn.width = this.width;
-        btn.height = this.height;
+        btn.width = width;
+        btn.height = height;
+        btn.text = text;
         
         //hook up draw button and function for what its supposed todo
         btn.draw = drawButton;
@@ -395,13 +403,13 @@ app.main = {
         
     nextGameState: function()
     {
-        if(main.gameState == this.GAME_STATE.MAIN)
+        if(app.main.gameState == app.main.GAME_STATE.MAIN)
         {
-            main.gameState = this.GAME_STATE.SETTINGS;
+            app.main.gameState = app.main.GAME_STATE.SETTINGS;
         }
-        else if(main.gameState == this.GAME_STATE.SETTINGS)
+        else if(app.main.gameState == app.main.GAME_STATE.SETTINGS)
         {
-            main.gameState = this.GAME_STATE.PLAY;
+            app.main.gameState = app.main.GAME_STATE.PLAY;
         }
     }
     
