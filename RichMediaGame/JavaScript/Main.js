@@ -50,7 +50,7 @@ app.main = {
     openTile: null, //variable for us to have a reference to the open tile space
     
     //buttons
-    btnPlay: null;
+    btnPlay: null,
     
     //var img : new Image();
 
@@ -73,7 +73,8 @@ app.main = {
 		//hook up events
 		this.canvas.onmousedown = this.doMousedown;
         
-        //create tileset
+        //create play button
+        this.btnPlay = this.makeButton((this.WIDTH / 2), (this.HEIGHT / 2), 200, 100, "PLAY", this.nextGameState);
 
 		//scramble tiles
 		this.reset();
@@ -338,7 +339,7 @@ app.main = {
         ctx.strokeRect(100, 100, 600, 100); //box out where logo would go
         
         //draw play button
-        btnPlay.draw(ctx);
+        this.btnPlay.draw(ctx);
         
         //draw names
         ctx.fillText("Matt Dieselman and Joel Shuart", (this.WIDTH / 2) - 70, 500);
@@ -378,15 +379,30 @@ app.main = {
         //add proprties
         btn.x = xPos;
         btn.y = yPos;
-        btn.width = width;
-        btn.height = height;
+        btn.width = this.width;
+        btn.height = this.height;
         
         //hook up draw button and function for what its supposed todo
-        btn.draw = drawButton(ctx);
+        btn.draw = drawButton;
         btn.clicked = func;
+        
+        //no more properties can be added
+        Object.seal(btn);
         
         //return the button we just made
         return btn;
+    },
+        
+    nextGameState: function()
+    {
+        if(main.gameState == this.GAME_STATE.MAIN)
+        {
+            main.gameState = this.GAME_STATE.SETTINGS;
+        }
+        else if(main.gameState == this.GAME_STATE.SETTINGS)
+        {
+            main.gameState = this.GAME_STATE.PLAY;
+        }
     }
     
     
