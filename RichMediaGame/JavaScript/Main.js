@@ -115,10 +115,14 @@ app.main = {
     //image to be used in our game
 
     img : null,
+<<<<<<< HEAD
 
     //Vars to scale image appropriately
     imgXScale :0,
     imgYScale:0,
+=======
+    logo: null,
+>>>>>>> 7c203cba97a1a9d4511e5a579953a242a5548a0a
     
 
     
@@ -150,7 +154,14 @@ app.main = {
         this.img = new Image();
 
         this.img.src = "https://scontent-ort2-1.xx.fbcdn.net/v/t1.0-9/17796183_1518454294833543_3534951743252547946_n.jpg?oh=27b1de1c72bf019a0ffe8aca2aa8b793&oe=594E0C94";
+<<<<<<< HEAD
 
+=======
+        
+        this.logo = new Image();
+        this.logo.src = "JavaScript/resources/slidersLogo.jpg";
+        
+>>>>>>> 7c203cba97a1a9d4511e5a579953a242a5548a0a
         //this.img.width=this.canvas.width/2;
 
         //this.img.height=this.canvas.height/2;
@@ -771,9 +782,13 @@ app.main = {
         ctx.strokeStyle = "white";
 
         ctx.fillStyle = "white";
+<<<<<<< HEAD
 
         ctx.strokeRect(100, 100, 600, 100); //box out where logo would go
 
+=======
+        ctx.drawImage(this.logo, 60, 100, 700, 125);
+>>>>>>> 7c203cba97a1a9d4511e5a579953a242a5548a0a
         
 
         //draw play button
