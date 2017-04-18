@@ -204,7 +204,6 @@ app.main = {
 		//a func that we will soon use as a methods
 		var drawTile = function(ctx)
 		{
-<<<<<<< HEAD
             //var arrayX = this.x;// + 1;
             //var arrayY = this.y;// + 1;
             
@@ -223,7 +222,6 @@ app.main = {
             ctx.strokeStyle="green";
             ctx.rect(this.x * this.width/2, this.y * this.height/2, this.width/2, this.height/2);
             ctx.stroke();
-=======
             //only draw if its not hidden
             if(!this.hidden)
             {
@@ -240,7 +238,6 @@ app.main = {
                     arrayX * this.width, arrayY * this.height, this.width, this.height
                 ); 
             }
->>>>>>> 7e53a5852f7070181cc4a3dd7cf0af4d690d4eff
 		};
 
 		var array = [];
@@ -481,11 +478,8 @@ app.main = {
         {
             //prep game
             app.main.tiles = app.main.makeTiles(app.main.numDivs); //create out tile set
-<<<<<<< HEAD
             app.main.shuffleTiles(); //shuffle em up
-=======
             app.main.tiles = app.main.shuffleTiles(app.main.tiles); //shuffle em up
->>>>>>> 7e53a5852f7070181cc4a3dd7cf0af4d690d4eff
             
             //chnage to the game itself
             app.main.gameState = app.main.GAME_STATE.PLAY;
@@ -533,7 +527,6 @@ app.main = {
     
     shuffleTiles: function(tiles)
     {
-<<<<<<< HEAD
         console.log("hit shuff");
         //loop through array of tiles and switch around the x,y cords.
         for(var j=0;j<this.tiles.length;j++){
@@ -549,7 +542,6 @@ app.main = {
             this.tiles[j].y=tempY;
         }
        // return this.tiles;
-=======
         var a = tiles;
         
         //hide tile at (0,0)
@@ -584,7 +576,6 @@ app.main = {
         }
 
         return a;
->>>>>>> 7e53a5852f7070181cc4a3dd7cf0af4d690d4eff
     }
     
     
