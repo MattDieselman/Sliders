@@ -48,7 +48,8 @@ app.main = {
 	paused: false,
 	animationID: 0,
     openTile: null, //variable for us to have a reference to the open tile space
-    
+    tileWidth: this.WIDTH/this.numDivs,
+    tileHeight:this.HEIGHT/this.numDivs,
     //buttons
     btnPlay: null,
     btnAddDiv: null,
@@ -73,8 +74,10 @@ app.main = {
         //initalize image
         this.img = new Image();
         this.img.src = "https://scontent-ort2-1.xx.fbcdn.net/v/t1.0-9/17796183_1518454294833543_3534951743252547946_n.jpg?oh=27b1de1c72bf019a0ffe8aca2aa8b793&oe=594E0C94";
-
-		//hook up events
+        //this.img.width=this.canvas.width/2;
+        //this.img.height=this.canvas.height/2;
+		//this.img.onload = this.img.resizeImg(this.img,this.canvas.width,this.canvas.height);
+        //hook up events
 		this.canvas.onmousedown = this.doMousedown;
         
         //create buttons
@@ -201,25 +204,31 @@ app.main = {
 		//a func that we will soon use as a methods
 		var drawTile = function(ctx)
 		{
-            var arrayX = this.x + 1;
-            var arrayY = this.y + 1;
+            //var arrayX = this.x;// + 1;
+            //var arrayY = this.y;// + 1;
             
             //draw only part of the image
             ctx.drawImage(
                 app.main.img, //original image
                 
                 //crop
-                this.x * this.width, this.y * this.height, this.width, this.height,
+                this.originX * this.width, this.originY * this.height, this.width, this.height,
                 
-                arrayX * this.width, arrayY * this.height, this.width, this.height
+                //draw image
+                this.x * this.width/2, this.y * this.height/2, this.width/2, this.height/2
             );
+
+            //draw boarder around each tile to clearly show divs
+            ctx.strokeStyle="green";
+            ctx.rect(this.x * this.width/2, this.y * this.height/2, this.width/2, this.height/2);
+            ctx.stroke();
 		};
 
 		var array = [];
 		//debugger;
-		for(var x = 0; x < num; x++)
+		for(var x = 0; x <= num; x++)
 		{
-            for(var y = 0; y < num; y++)
+            for(var y = 0; y <= num; y++)
             {
                 //make new objject literal
                 var t = {};
@@ -452,7 +461,7 @@ app.main = {
         {
             //prep game
             app.main.tiles = app.main.makeTiles(app.main.numDivs); //create out tile set
-            app.main.shuffleTiles; //shuffle em up
+            app.main.shuffleTiles(); //shuffle em up
             
             //chnage to the game itself
             app.main.gameState = app.main.GAME_STATE.PLAY;
@@ -500,11 +509,21 @@ app.main = {
     
     shuffleTiles: function()
     {
-        var a = app.main.tiles;
-        
-        for(var j, x, i = a.length; i; j = Math.floor(Math.random() * i), x = a[--i], a[i] = a[j], a[j] = x);
-        
-        app.main.tiles = a;
+        console.log("hit shuff");
+        //loop through array of tiles and switch around the x,y cords.
+        for(var j=0;j<this.tiles.length;j++){
+
+            var rand = Math.floor(getRandom(0,this.tiles.length));
+
+            var tempX = this.tiles[rand].x;
+            var tempY = this.tiles[rand].y;
+
+            this.tiles[rand].x=this.tiles[j].x;
+            this.tiles[rand].y=this.tiles[j].y;
+            this.tiles[j].x=tempX;
+            this.tiles[j].y=tempY;
+        }
+       // return this.tiles;
     }
     
     
