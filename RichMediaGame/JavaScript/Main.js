@@ -44,13 +44,15 @@ app.main = {
 
 	//more properties
 	tiles: [],
-	numDivs: 0,
+	numDivs: 1,
 	paused: false,
 	animationID: 0,
     openTile: null, //variable for us to have a reference to the open tile space
     
     //buttons
     btnPlay: null,
+    btnAddDiv: null,
+    btnSubDiv: null,
     
     //var img : new Image();
 
@@ -65,16 +67,16 @@ app.main = {
 		this.canvas.height = this.HEIGHT;
 		this.ctx = this.canvas.getContext('2d');
 
-		//this.circles = this.makeCircles(this.numCircles);
-		console.log("this.circles = " + this.circles);
-
 		this.gameState = this.GAME_STATE.MAIN; //initally start at the main menu
 
 		//hook up events
 		this.canvas.onmousedown = this.doMousedown;
         
-        //create play button
+        //create buttons
         this.btnPlay = this.makeButton(((this.WIDTH / 2) - 50), (this.HEIGHT / 2), 100, 40, "PLAY", this.nextGameState);
+        
+        this.btnAddDiv = this.makeButton(((this.WIDTH / 2) - 150), ((this.HEIGHT / 2) - 270), 300, 40, "Increase Divs", this.increaseDivs);
+        this.btnSubDiv = this.makeButton(((this.WIDTH / 2) - 150), ((this.HEIGHT / 2) - 170), 300, 40, "Decrease Divs", this.decreaseDivs);
 
 		//scramble tiles
 		this.reset();
@@ -103,12 +105,11 @@ app.main = {
 	 	//update based on gameState
         if(this.gameState == this.GAME_STATE.MAIN) //MAIN MENU
         {
-            //check if we clicked the play button
-            //this.checkButtonClicked(getMouse(e), this.btnPlay);
+
         }
         else if(this.gameState == this.GAME_STATE.SETTINGS) //GAME SETTINGS MENU
         {
-                
+            
         }
         else
         {
@@ -128,7 +129,7 @@ app.main = {
         }
         else if(this.gameState == this.GAME_STATE.SETTINGS) //GAME SETTINGS MENU
         {
-                
+            this.drawSettingsMenu(this.ctx);
         }
         else //GAME ITSELF
         {
@@ -260,8 +261,11 @@ app.main = {
 		//click
 		var mouse = getMouse(e);
 		
+        //hook up clickable objects
 		app.main.checkTileClicked(mouse);
         app.main.checkButtonClicked(mouse, app.main.btnPlay);
+        app.main.checkButtonClicked(mouse, app.main.btnAddDiv);
+        app.main.checkButtonClicked(mouse, app.main.btnSubDiv);
 	},
 
     //checks mouse pos against a tile
@@ -410,6 +414,45 @@ app.main = {
         else if(app.main.gameState == app.main.GAME_STATE.SETTINGS)
         {
             app.main.gameState = app.main.GAME_STATE.PLAY;
+        }
+    },
+    
+    drawSettingsMenu: function(ctx)
+    {
+        ctx.save();
+        
+         //set fill and stroke
+        ctx.strokeStyle = "white";
+        ctx.fillStyle = "white";
+        ctx.font = "24pt courier";
+        
+        //draw div incrementor
+        this.btnAddDiv.draw(ctx);
+        ctx.fillText(this.numDivs, (this.btnAddDiv.x + (this.btnAddDiv.width / 2) - 20), (this.btnAddDiv.y + (this.btnAddDiv.height * 2)),);
+        this.btnSubDiv.draw(ctx);
+        
+        
+        //draw play button
+        this.btnPlay.draw(ctx);
+        
+        ctx.restore();
+    },
+    
+    increaseDivs: function()
+    {
+        if(app.main.numDivs < 99)
+        {
+            //increment number of divs
+            app.main.numDivs = app.main.numDivs + 1;
+        }
+    },
+    
+    decreaseDivs: function()
+    {
+        if(app.main.numDivs > 1)
+        {
+            //increment number of divs
+            app.main.numDivs = app.main.numDivs - 1;
         }
     }
     
