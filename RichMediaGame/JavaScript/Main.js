@@ -18,7 +18,7 @@ var app = app || {};
 app.main = {
     //  properties
     WIDTH : 800, 
-    HEIGHT: 600
+    HEIGHT: 600,
     canvas: undefined,
     ctx: undefined,
     lastTime: 0, // used by calculateDeltaTime() 
