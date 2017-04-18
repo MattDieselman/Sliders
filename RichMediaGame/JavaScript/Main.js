@@ -54,7 +54,8 @@ app.main = {
     btnAddDiv: null,
     btnSubDiv: null,
     
-    //var img : new Image();
+    //image to be used in our game
+    img : null,
 
     
     
@@ -68,6 +69,10 @@ app.main = {
 		this.ctx = this.canvas.getContext('2d');
 
 		this.gameState = this.GAME_STATE.MAIN; //initally start at the main menu
+        
+        //initalize image
+        this.img = new Image();
+        this.img.src = "https://scontent-ort2-1.xx.fbcdn.net/v/t1.0-9/17796183_1518454294833543_3534951743252547946_n.jpg?oh=27b1de1c72bf019a0ffe8aca2aa8b793&oe=594E0C94";
 
 		//hook up events
 		this.canvas.onmousedown = this.doMousedown;
@@ -75,8 +80,8 @@ app.main = {
         //create buttons
         this.btnPlay = this.makeButton(((this.WIDTH / 2) - 50), (this.HEIGHT / 2), 100, 40, "PLAY", this.nextGameState);
         
-        this.btnAddDiv = this.makeButton(((this.WIDTH / 2) - 150), ((this.HEIGHT / 2) - 270), 300, 40, "Increase Divs", this.increaseDivs);
-        this.btnSubDiv = this.makeButton(((this.WIDTH / 2) - 150), ((this.HEIGHT / 2) - 170), 300, 40, "Decrease Divs", this.decreaseDivs);
+        this.btnAddDiv = this.makeButton(((this.WIDTH / 2) - 150), ((this.HEIGHT / 2) - 170), 300, 40, "Increase Divs", this.increaseDivs);
+        this.btnSubDiv = this.makeButton(((this.WIDTH / 2) - 150), ((this.HEIGHT / 2) - 70), 300, 40, "Decrease Divs", this.decreaseDivs);
 
 		//scramble tiles
 		this.reset();
@@ -170,52 +175,84 @@ app.main = {
 	},
 	
 	//create tiles
-	makeTiles: function(xPos, yPos, num)
+	makeTiles: function(num)
 	{
 		//a func that will be used as a method
 		var moveTile = function(direction)
 		{
-			
+			//change xy based on direction
+            switch(direction)
+            {
+                case "up":
+                    this.y = this.y + 1;
+                    break;
+                case "down":
+                    this.y = this.y - 1;
+                    break;
+                case "left":
+                    this.x = this.x + 1;
+                    break;
+                case "right":
+                    this.x = this.x - 1;
+                    break;
+            }
 		};
 
 		//a func that we will soon use as a methods
 		var drawTile = function(ctx)
 		{
-
+            var arrayX = this.x + 1;
+            var arrayY = this.y + 1;
+            
+            //draw only part of the image
+            ctx.drawImage(
+                app.main.img, //original image
+                
+                //crop
+                this.x * this.width, this.y * this.height, this.width, this.height,
+                
+                arrayX * this.width, arrayY * this.height, this.width, this.height
+            );
 		};
 
 		var array = [];
-		debugger;
-		for(var i = 0; i < num; i++)
+		//debugger;
+		for(var x = 0; x < num; x++)
 		{
-			//make new objject literal
-			var t = {};
+            for(var y = 0; y < num; y++)
+            {
+                //make new objject literal
+                var t = {};
 
-			//add xy properties
-			t.x = xPos;
-			t.y = yPos;
-            
-            //length width properties
-            t.length = ctx.length / (numDivs + 1);
-            t.height = ctx.height / (numDivs + 1);
-            
-            //other proerties
-            t.selected = false;
-			
-			//teach the circles their methods
-			t.draw = circleDraw;
-			t.move = moveTile;
-            
-			//no more properties can be added
-			Object.seal(t);
-			array.push(t);
+                //add xy properties
+                t.x = x;
+                t.y = y;
+
+                t.originX = x;
+                t.originY = y;
+
+                //length width properties
+                t.width = app.main.img.width / (num + 1);
+                t.height = app.main.img.height / (num + 1);
+
+                //other proerties
+                t.selected = false;
+
+                //teach the circles their methods
+                t.draw = drawTile;
+                t.move = moveTile;
+
+                //no more properties can be added
+                Object.seal(t);
+                array.push(t);  
+            }
 		}
         
 		return array;
 	},
 
 	//draw circles
-	drawTiless: function(ctx)
+	drawTiles: function(ctx)
 	{
 		//chekc if the round is over
 		if(this.gameState == this.GAME_STATE.SOLVED)
@@ -345,7 +382,7 @@ app.main = {
         ctx.strokeRect(100, 100, 600, 100); //box out where logo would go
         
         //draw play button
-        this.btnPlay.draw(ctx);
+        app.main.btnPlay.draw(ctx);
         
         //draw names
         ctx.fillText("Matt Dieselman and Joel Shuart", (this.WIDTH / 2) - 70, 500);
@@ -413,6 +450,11 @@ app.main = {
         }
         else if(app.main.gameState == app.main.GAME_STATE.SETTINGS)
         {
+            //prep game
+            app.main.tiles = app.main.makeTiles(app.main.numDivs); //create out tile set
+            app.main.shuffleTiles; //shuffle em up
+            
+            //chnage to the game itself
             app.main.gameState = app.main.GAME_STATE.PLAY;
         }
     },
@@ -454,6 +496,15 @@ app.main = {
             //increment number of divs
             app.main.numDivs = app.main.numDivs - 1;
         }
+    },
+    
+    shuffleTiles: function()
+    {
+        var a = app.main.tiles;
+        
+        for(var j, x, i = a.length; i; j = Math.floor(Math.random() * i), x = a[--i], a[i] = a[j], a[j] = x);
+        
+        app.main.tiles = a;
     }
     
     
