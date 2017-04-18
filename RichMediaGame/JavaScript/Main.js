@@ -204,6 +204,7 @@ app.main = {
 		//a func that we will soon use as a methods
 		var drawTile = function(ctx)
 		{
+<<<<<<< HEAD
             //var arrayX = this.x;// + 1;
             //var arrayY = this.y;// + 1;
             
@@ -222,6 +223,24 @@ app.main = {
             ctx.strokeStyle="green";
             ctx.rect(this.x * this.width/2, this.y * this.height/2, this.width/2, this.height/2);
             ctx.stroke();
+=======
+            //only draw if its not hidden
+            if(!this.hidden)
+            {
+                var arrayX = this.x + 1;
+                var arrayY = this.y + 1;
+            
+                //draw only part of the image
+                ctx.drawImage(
+                    app.main.img, //original image
+
+                    //crop
+                    this.x * this.width, this.y * this.height, this.width, this.height,
+
+                    arrayX * this.width, arrayY * this.height, this.width, this.height
+                ); 
+            }
+>>>>>>> 7e53a5852f7070181cc4a3dd7cf0af4d690d4eff
 		};
 
 		var array = [];
@@ -241,11 +260,12 @@ app.main = {
                 t.originY = y;
 
                 //length width properties
-                t.width = app.main.img.width / (num + 1);
-                t.height = app.main.img.height / (num + 1);
+                t.width = app.main.img.width / (num + 2);
+                t.height = app.main.img.height / (num + 2);
 
                 //other proerties
                 t.selected = false;
+                t.hidden = false; //for the removed tile
 
                 //teach the circles their methods
                 t.draw = drawTile;
@@ -461,7 +481,11 @@ app.main = {
         {
             //prep game
             app.main.tiles = app.main.makeTiles(app.main.numDivs); //create out tile set
+<<<<<<< HEAD
             app.main.shuffleTiles(); //shuffle em up
+=======
+            app.main.tiles = app.main.shuffleTiles(app.main.tiles); //shuffle em up
+>>>>>>> 7e53a5852f7070181cc4a3dd7cf0af4d690d4eff
             
             //chnage to the game itself
             app.main.gameState = app.main.GAME_STATE.PLAY;
@@ -507,8 +531,9 @@ app.main = {
         }
     },
     
-    shuffleTiles: function()
+    shuffleTiles: function(tiles)
     {
+<<<<<<< HEAD
         console.log("hit shuff");
         //loop through array of tiles and switch around the x,y cords.
         for(var j=0;j<this.tiles.length;j++){
@@ -524,6 +549,42 @@ app.main = {
             this.tiles[j].y=tempY;
         }
        // return this.tiles;
+=======
+        var a = tiles;
+        
+        //hide tile at (0,0)
+        a[0].hidden = true;
+        
+        //chose random tile
+        var randTile = [Math.floor(getRandom(0, a.length - 1)), Math.floor(getRandom(1, a.length - 1))];
+
+        //switch current tile with random pos
+        a[0].x = randTile[0];
+        a[0].y = randTile[1];
+        
+       for(var j = 1; j < app.main.length; j++)
+        {
+             //get position in array of the random tile we just assigned over
+             var i = (randTile[0] * (app.main.numDivs + 1)) + randTile[1];
+            
+            //get new random tile
+            randTile = [getRandom(0, a.length - 1), getRandom(1, a.length - 1)];
+            
+            //assign tile new values
+            a[i].x = randTile[0];
+            a[i].y = randTile[1];
+            
+            //check if we are on the last tile
+            if(i == a.length - 1)
+            {
+                //send it to 0,0
+                a[i].x = 0;
+                a[i].y = 0;
+            }
+        }
+
+        return a;
+>>>>>>> 7e53a5852f7070181cc4a3dd7cf0af4d690d4eff
     }
     
     
