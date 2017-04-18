@@ -57,7 +57,7 @@ app.main = {
     
     //image to be used in our game
     img : null,
-
+    logo: null,
     
     
     // MAIN METHODS =========================================================================================================
@@ -74,6 +74,10 @@ app.main = {
         //initalize image
         this.img = new Image();
         this.img.src = "https://scontent-ort2-1.xx.fbcdn.net/v/t1.0-9/17796183_1518454294833543_3534951743252547946_n.jpg?oh=27b1de1c72bf019a0ffe8aca2aa8b793&oe=594E0C94";
+        
+        this.logo = new Image();
+        this.logo.src = "JavaScript/resources/slidersLogo.jpg";
+        
         //this.img.width=this.canvas.width/2;
         //this.img.height=this.canvas.height/2;
 		//this.img.onload = this.img.resizeImg(this.img,this.canvas.width,this.canvas.height);
@@ -405,7 +409,7 @@ app.main = {
         //draw logo
         ctx.strokeStyle = "white";
         ctx.fillStyle = "white";
-        ctx.strokeRect(100, 100, 600, 100); //box out where logo would go
+        ctx.drawImage(this.logo, 60, 100, 700, 125);
         
         //draw play button
         app.main.btnPlay.draw(ctx);
