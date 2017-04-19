@@ -44,6 +44,8 @@ app.main = {
 
     //more properties
     tiles: [],
+    sortedTiles:[],
+    blackTile:0,
     numDivs: 1,
     paused: false,
     animationID: 0,
@@ -63,6 +65,8 @@ app.main = {
     // MAIN METHODS =========================================================================================================
     init : function() {
         console.log("app.main.init() called");
+
+        document.addEventListener("keydown",this.keyPress,false);
         // initialize properties
         this.canvas = document.querySelector('canvas');
         this.canvas.width = this.WIDTH;
@@ -158,7 +162,47 @@ app.main = {
         }
     },
 
-    //HELPER METHODS ============================================================================================================================================
+    //HELPER METHODS ============================================================================================================================================\
+
+//keyboard input
+    keyPress:function(e){
+        if(app.main.gameState == app.main.GAME_STATE.PLAY){
+            console.log(app.main.blackTile);
+        //console.log(e);
+            if(e.char=="a"){
+                if(app.main.sortedTiles[app.main.blackTile].x!=0){
+                    app.main.switchTiles(-1);
+                    app.main.blackTile--;
+                }
+            }
+            if(e.char=="d"){
+                if(app.main.sortedTiles[app.main.blackTile].x!=app.main.numDivs){
+                    app.main.switchTiles(1);
+                    app.main.blackTile++;
+                }
+            }            
+            if(e.char=="w"){
+                if(app.main.sortedTiles[app.main.blackTile].y!=0){
+                    app.main.switchTiles(-app.main.numDivs);
+                    app.main.blackTile-=app.main.numDivs;
+                }
+            }            
+            if(e.char=="s"){
+                if(app.main.sortedTiles[app.main.blackTile].y!=app.main.numDivs){
+                    app.main.switchTiles(app.main.numDivs);
+                    app.main.blackTile+=app.main.numDivs;
+                }                
+            }
+        }
+    },
+
+    switchTiles:function(newSpot){
+        var temp = app.main.sortedTiles[app.main.blackTile+newSpot];
+        app.main.sortedTiles[app.main.blackTile+newSpot] = app.main.sortedTiles[app.main.blackTile];
+        app.main.sortedTiles[app.main.blackTile]=temp;
+        app.main.GAME_STATE=app.main.GAME_STATE.MOVING;
+    },
+
     fillText: function(string, x, y, css, color) {
         this.ctx.save();
         // https://developer.mozilla.org/en-US/docs/Web/CSS/font
@@ -278,7 +322,7 @@ app.main = {
                 //teach the circles their methods
                 t.draw = drawTile;
                 t.move = moveTile;
-
+                t.isLast=false;
                 //no more properties can be added
                 Object.seal(t);
                 array.push(t);  
@@ -301,7 +345,7 @@ app.main = {
         for(var i = 0; i < this.tiles.length; i++)
         {
             var t = this.tiles[i];
-            t.draw(ctx);
+            if(!t.isLast)t.draw(ctx);
         }
     },
 
@@ -521,11 +565,14 @@ app.main = {
 
     shuffleTiles: function()
     {
-        this.tiles.splice(this.tiles.length-1,1);
+        //this.tiles.splice(this.tiles.length-1,1);
+        this.tiles[this.tiles.length-1].isLast=true;
+        app.main.blackTile=this.tiles.length-1;
+
         //console.log("hit shuff");
         //loop through array of tiles and switch around the x,y cords.
-        for(var j=0;j<this.tiles.length;j++){
-            var rand = Math.floor(getRandom(0,this.tiles.length));
+        for(var j=0;j<this.tiles.length-1;j++){
+            var rand = Math.floor(getRandom(0,this.tiles.length-1));
 
             var tempX = this.tiles[rand].x;
             var tempY = this.tiles[rand].y;
@@ -535,6 +582,44 @@ app.main = {
             this.tiles[j].x=tempX;
             this.tiles[j].y=tempY;
         }
-               // return this.tiles;
+        this.sortedTiles=this.tiles.slice(0,this.tiles.length);
+
+        var sort = true;
+        //shorthand for section
+        var st=this.sortedTiles;
+        while(sort){
+            for(var j=0;j<st.length;j++){
+                for(var i=0;i<st.length;i++){
+                    if(i==j) break;
+                    if((st[j].x>st[i].x)&&(st[j].y==st[i].y)){
+                        sort=false;
+                    }
+                    else if((st[j].x<st[i].x)&&(st[j].y==st[i].y)){
+                        var temp = st[i].x;
+                        st[i].x=st[j].x;
+                        st[j].x=temp;
+                        sort=true;
+                    }
+                    else if((st[j].y<st[i].y)&&(st[j].x==st[i].x)){
+                        var temp = st[i].y;
+                        st[i].y=st[j].y;
+                        st[j].y=temp;
+                        sort=true;
+                    }
+                    else if((st[j].y<st[i].y)&&(st[j].x<st[i].x)){
+                        var temp = st[i].y;
+                        st[i].y=st[j].y;
+                        st[j].y=temp;
+                        var temp = st[i].x;
+                        st[i].x=st[j].x;
+                        st[j].x=temp;
+                        sort=true;
+                    }
+                }
+            }
+        }
+        console.log(this.sortedTiles);
+        //sort new array for movement
+
     }
 }; // end app.main
