@@ -74,6 +74,10 @@ app.main = {
         this.ctx = this.canvas.getContext('2d');
 
         this.gameState = this.GAME_STATE.MAIN; //initally start at the main menu
+        
+        //clear canvas once before we get started
+        this.ctx.fillStyle = "black"; 
+        this.ctx.fillRect(0,0,this.WIDTH,this.HEIGHT);
 
         //initalize image
         this.img = new Image();
@@ -91,8 +95,6 @@ app.main = {
 
         //set the scale for the image
         this.img.onload=function(){
-            app.main.imgXScale=(app.main.WIDTH/this.width);
-            app.main.imgYScale=(app.main.HEIGHT/this.height);
             console.log(this.width);
             console.log(app.main.WIDTH);
             console.log(app.main.imgXScale);
@@ -232,22 +234,37 @@ app.main = {
         //a func that we will soon use as a methods
         var drawTile = function(ctx)
         {
+            ctx.save();
+            
             //draw only part of the image
             ctx.drawImage(
-                app.main.img, //original image
+                this.img, //original image
               
                 //crop
                 this.originX * this.width, this.originY * this.height, this.width, this.height,
                 
                 //draw image
-                this.x * this.width*app.main.imgXScale, this.y * this.height*app.main.imgYScale, this.width*app.main.imgXScale, this.height*app.main.imgYScale
+                this.x * this.width*this.imgXScale, 
+                this.y * this.height*this.imgYScale, 
+                
+                this.width*this.imgXScale, 
+                this.height*this.imgYScale
             );
 
             //draw boarder around each tile to clearly show divs
-            ctx.strokeStyle="green";
-            ctx.rect(this.x * (this.width*app.main.imgXScale), this.y * this.height*app.main.imgYScale, this.width*app.main.imgXScale, this.height*app.main.imgYScale);
+            if(this.selected)
+            {
+                ctx.strokeStyle="red";  
+            }
+            else
+            {
+                ctx.strokeStyle="green";
+            }
+            ctx.rect(this.x * (this.width*this.imgXScale), this.y * this.height*this.imgYScale, this.width*this.imgXScale, this.height*this.imgYScale);
 
             ctx.stroke();
+            
+            ctx.restore();
         };
 
         var array = [];
@@ -265,6 +282,11 @@ app.main = {
 
                 t.originX = x;
                 t.originY = y;
+                
+                //img properties
+                t.img = app.main.img;
+                t.imgXScale = (app.main.WIDTH / t.img.width);
+                t.imgYScale = (app.main.HEIGHT / t.img.height);
 
                 //length width properties
                 t.width = app.main.img.width / (num + 1);
@@ -347,7 +369,6 @@ app.main = {
         for(var i = this.tiles.length -1; i >= 0; i--)
         {
             var t = this.tiles[i];
-
             //AABB
             if(mouse.x >= t.x && mouse.x <= (t.x + t.width) && mouse.y >= t.y && mouse.y <= (t.y + t.height))
             {
@@ -486,7 +507,7 @@ app.main = {
 
         //draw div incrementor
         this.btnAddDiv.draw(ctx);
-        ctx.fillText(this.numDivs, (this.btnAddDiv.x + (this.btnAddDiv.width / 2) - 20), (this.btnAddDiv.y + (this.btnAddDiv.height * 2)),);
+        ctx.fillText(this.numDivs, (this.btnAddDiv.x + (this.btnAddDiv.width / 2) - 20), (this.btnAddDiv.y + (this.btnAddDiv.height * 2)));
         this.btnSubDiv.draw(ctx);
 
         //draw play button
