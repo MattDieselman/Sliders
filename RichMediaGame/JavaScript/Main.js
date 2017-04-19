@@ -45,6 +45,7 @@ app.main = {
     //more properties
     tiles: [],
     sortedTiles:[],
+    particles:[],
     blackTile:0,
     numDivs: 1,
     paused: false,
@@ -172,38 +173,46 @@ app.main = {
             console.log(app.main.blackTile);
         //console.log(e);
             if(e.char=="a"){
-                if(app.main.sortedTiles[app.main.blackTile].x>0){
-                    app.main.switchTiles(-1);
+                if(app.main.blackTile%app.main.numDivs>0){
+                    app.main.switchTiles(-1,0);
                     app.main.blackTile--;
                 }
             }
             if(e.char=="d"){
                 if(app.main.sortedTiles[app.main.blackTile].x<app.main.numDivs){
-                    app.main.switchTiles(1);
+                    app.main.switchTiles(1,0);
                     app.main.blackTile++;
                 }
             }            
             if(e.char=="w"){
                 if(app.main.sortedTiles[app.main.blackTile].y>0){
-                    app.main.switchTiles(-app.main.numDivs);
+                    app.main.switchTiles(-app.main.numDivs,1);
                     app.main.blackTile-=app.main.numDivs;
                 }
             }            
             if(e.char=="s"){
                 if(app.main.sortedTiles[app.main.blackTile].y<app.main.numDivs){
-                    app.main.switchTiles(app.main.numDivs);
+                    app.main.switchTiles(app.main.numDivs,1);
                     app.main.blackTile+=app.main.numDivs;
                 }                
             }
         }
     },
 
-    switchTiles:function(newSpot){
+    switchTiles:function(newSpot,dir){
         console.log("switch");
-        var temp = app.main.sortedTiles[app.main.blackTile+newSpot];
-        app.main.sortedTiles[app.main.blackTile+newSpot] = app.main.sortedTiles[app.main.blackTile];
-        app.main.sortedTiles[app.main.blackTile]=temp;
-        app.main.gamestate=app.main.GAME_STATE.MOVING;
+        if(dir==0){
+            var temp = app.main.sortedTiles[app.main.blackTile+newSpot].x;
+            app.main.sortedTiles[app.main.blackTile+newSpot].x = app.main.sortedTiles[app.main.blackTile].x;
+            app.main.sortedTiles[app.main.blackTile].x=temp;
+            app.main.gamestate=app.main.GAME_STATE.MOVING;
+        }
+        else if(dir==1){
+            var temp = app.main.sortedTiles[app.main.blackTile+newSpot].y;
+            app.main.sortedTiles[app.main.blackTile+newSpot].y = app.main.sortedTiles[app.main.blackTile].y;
+            app.main.sortedTiles[app.main.blackTile].y=temp;
+            app.main.gamestate=app.main.GAME_STATE.MOVING;
+        }
     },
 
     fillText: function(string, x, y, css, color) {
@@ -623,6 +632,11 @@ app.main = {
         }
         console.log(this.sortedTiles);
         //sort new array for movement
+
+    },
+
+    genParticles:function(){
+
 
     }
 }; // end app.main
