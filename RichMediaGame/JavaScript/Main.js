@@ -74,7 +74,7 @@ app.main = {
 
         document.addEventListener("keydown",this.keyPress,false);
         document.addEventListener("keydown",this.keyPress,false);
-        var audioElement = document.querySelector('audio');
+        var audioElement = document.querySelector('#bg');
         audioElement.loop=true;
         //create the sounds
             audioElement.src = "JavaScript/resources/Upbeat Forever.mp3";
@@ -177,6 +177,7 @@ app.main = {
         }
         else if(this.gameState == this.GAME_STATE.SOLVED)
         {
+
             for(var i = 0; i < this.emitters.length; i++){
                 var e = this.emitters[i];
                 e.draw(this.ctx);
@@ -192,6 +193,15 @@ app.main = {
     },
 
     //HELPER METHODS ============================================================================================================================================\
+
+    //play sounds
+    playSounds:function(sound){
+        var audioElement2 = document.querySelector('#sef');
+            audioElement2.loop=false;
+            audioElement2.src = "JavaScript/resources/"+sound+".wav";
+            audioElement2.play();
+            audioElement2.volume = 0.4;
+    },
 
 //keyboard input
     keyPress:function(e){
@@ -661,6 +671,7 @@ app.main = {
 
     },
     genChildParticles:function(x,y){
+        app.main.playSounds("child");
         var drawChild = function(ctx){
             if(this.life<=0&&!this.isDead){
                 app.main.particleCounter++;
@@ -698,6 +709,7 @@ app.main = {
         }
     },
     genParticles:function(){
+        app.main.playSounds("firework");
         var drawSpawner = function(ctx){
             if(this.isDead);
             else if(this.life<=-10&&!this.isDead){
