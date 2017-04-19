@@ -35,8 +35,8 @@ app.main = {
     GAME_STATE: Object.freeze({ // another fake enumeration
         MAIN : 0,
         SETTINGS : 1,
-        PLAY : 2,
-        MOVING : 3,
+        MOVING: 2,
+        PLAY : 3,
         PAUSE : 4,
         SOLVED : 5,
         INITIALIZE: 6
@@ -58,10 +58,6 @@ app.main = {
 
     //image to be used in our game
     img : null,
-
-    //Vars to scale image appropriately
-    imgXScale :0,
-    imgYScale:0,
     logo: null,
     
     // MAIN METHODS =========================================================================================================
@@ -85,29 +81,14 @@ app.main = {
         
         this.logo = new Image();
         this.logo.src = "JavaScript/resources/slidersLogo.jpg";
-        
-        //this.img.width=this.canvas.width/2;
-        //this.img.height=this.canvas.height/2;
-        //this.img.onload = this.img.resizeImg(this.img,this.canvas.width,this.canvas.height);
 
         //hook up events
         this.canvas.onmousedown = this.doMousedown;
-
-        //set the scale for the image
-        this.img.onload=function(){
-            console.log(this.width);
-            console.log(app.main.WIDTH);
-            console.log(app.main.imgXScale);
-
-        };
 
         //create buttons
         this.btnPlay = this.makeButton(((this.WIDTH / 2) - 50), (this.HEIGHT / 2), 100, 40, "PLAY", this.nextGameState);
         this.btnAddDiv = this.makeButton(((this.WIDTH / 2) - 150), ((this.HEIGHT / 2) - 170), 300, 40, "Increase Divs", this.increaseDivs);
         this.btnSubDiv = this.makeButton(((this.WIDTH / 2) - 150), ((this.HEIGHT / 2) - 70), 300, 40, "Decrease Divs", this.decreaseDivs);
-
-        //scramble tiles
-        this.reset();
 
         // start the game loop
         this.update();
@@ -134,34 +115,36 @@ app.main = {
         //update based on gameState
         if(this.gameState == this.GAME_STATE.MAIN) //MAIN MENU
         {
-
         }
         else if(this.gameState == this.GAME_STATE.SETTINGS) //GAME SETTINGS MENU
         {
-
+        }
+        else if(this.gameState == this.GAME_STATE.MOVING)
+        {
+            
         }
         else
         {
-
         }
 
         // 5) DRAW  
-        // i) draw background
-        this.ctx.fillStyle = "black"; 
-        this.ctx.fillRect(0,0,this.WIDTH,this.HEIGHT); 
-
         //draw based on gameState
         if(this.gameState == this.GAME_STATE.MAIN) //MAIN MENU
         {
+            this.clear(this.ctx);
+            
             //draw the main menu
             this.drawMainMenu(this.ctx);
         }
         else if(this.gameState == this.GAME_STATE.SETTINGS) //GAME SETTINGS MENU
         {
+            this.clear(this.ctx);
             this.drawSettingsMenu(this.ctx);
         }
-        else //GAME ITSELF
+        else if(this.gameState == this.GAME_STATE.MOVING)
         {
+            this.clear(this.ctx);
+            
             // ii) draw tiles
             this.ctx.globalAlpha = 0.9;
             this.drawTiles(this.ctx);
@@ -169,12 +152,9 @@ app.main = {
             // iii) draw HUD
             this.ctx.globalAlpha = 1.0;
             this.drawHUD(this.ctx);
-
-            // iv) draw debug info
-            if (this.debug){
-                // draw dt in bottom right corner
-                this.fillText("dt: " + dt.toFixed(3), this.WIDTH - 150, this.HEIGHT - 10, "18pt courier", "white");
-            }
+            
+            //update gamestate
+            this.nextGameState();
         }
     },
 
@@ -372,6 +352,9 @@ app.main = {
             //AABB
             if(mouse.x >= t.x && mouse.x <= (t.x + t.width) && mouse.y >= t.y && mouse.y <= (t.y + t.height))
             {
+                //chnage gameState to moving so we'll update
+                app.main.gameState = this.GAME_STATE.MOVING;
+                
                 //check if its already selected
                 if(t.selected)
                 {
@@ -382,22 +365,19 @@ app.main = {
                 {
                     t.selected = true;
                 }
-
-                //check if the grey tile is selected
-                if(openTile.selected)
-                {
-                     //its selected - switch tile spaces
-
-                }
+                
+                //chnage gameState to moving
+                app.main.gameState = app.main.GAME_STATE.MOVING;
             }   
         }
     },
 
-    //scrambles tiles and resets timer
-    reset: function()
+    //clears the screen
+    clear: function(ctx)
     {
-        
-
+        // i) draw background
+        ctx.fillStyle = "black"; 
+        ctx.fillRect(0,0,this.WIDTH,this.HEIGHT);
     },
 
     //draws all HUD elements
@@ -491,6 +471,11 @@ app.main = {
             app.main.tiles = app.main.makeTiles(app.main.numDivs); //create out tile set
             app.main.shuffleTiles(); //shuffle em up
             
+            //chaneg state to oving so we only update once
+            app.main.gameState = app.main.GAME_STATE.MOVING;
+        }
+        else if(app.main.gameState == app.main.GAME_STATE.MOVING)
+        {
             //chnage to the game itself
             app.main.gameState = app.main.GAME_STATE.PLAY;
         }
