@@ -45,7 +45,7 @@ app.main = {
     //more properties
     tiles: [],
     sortedTiles:[],
-    particles:[],
+    emitters:[],
     blackTile:0,
     numDivs: 1,
     paused: false,
@@ -76,8 +76,8 @@ app.main = {
         this.canvas.height = this.HEIGHT;
         this.ctx = this.canvas.getContext('2d');
 
-        this.gameState = this.GAME_STATE.MAIN; //initally start at the main menu
-        
+        this.gameState = this.GAME_STATE.SOLVED; //initally start at the main menu
+        this.genParticles();
         //clear canvas once before we get started
         this.ctx.fillStyle = "black"; 
         this.ctx.fillRect(0,0,this.WIDTH,this.HEIGHT);
@@ -162,6 +162,16 @@ app.main = {
             
             //update gamestate
             this.nextGameState();
+        }
+        else if(this.gameState == this.GAME_STATE.SOLVED)
+        {
+            for(var i = 0; i < this.emitters.length; i++){
+                var e = this.emitters[i];
+                e.draw(this.ctx);
+            }
+            this.ctx.fillStyle="black"
+            this.ctx.rect(0,0,this.WIDHT,this.HEIGHT);   
+            this.ctx.fill();
         }
     },
 
@@ -636,7 +646,30 @@ app.main = {
     },
 
     genParticles:function(){
+        var drawSpawner = function(ctx){
+            ctx.save()
+            this.x+=(this.destX-this.x)/this.speed;
+            this.y+=(this.destY-this.y)/this.speed;
 
+            ctx.fillStyle=this.color;
+            ctx.arc(this.x,this.y,3,0,Math.PI,false);
+            ctx.fill();
+            ctx.restore();
+
+        };
+        for(var i=0;i<10;i++){
+            var temp = {};
+            temp.x=Math.floor(getRandom(0,app.main.WIDTH));
+            temp.y=app.main.HEIGHT;
+            temp.color = getRandomColor();
+            temp.destX = Math.floor((app.main.WIDTH/2)+getRandom(-30,30));
+            temp.destY = Math.floor((app.main.HEIGHT/2)+getRandom(-30,30));
+            temp.speed=getRandom(10,30);
+            temp.draw=drawSpawner;
+            temp.life = getRandom(10,20);
+            Object.seal(temp);
+            app.main.emitters.push(temp); 
+        }
 
     }
 }; // end app.main
