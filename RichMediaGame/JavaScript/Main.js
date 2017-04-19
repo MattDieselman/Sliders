@@ -170,7 +170,6 @@ app.main = {
 //keyboard input
     keyPress:function(e){
         if(app.main.gameState == app.main.GAME_STATE.PLAY){
-        //console.log(e);
             if(e.char=="a"){
                 //get tile above blackTile
                 var tile = app.main.findTile((app.main.tiles[app.main.blackTile].x + 1), (app.main.tiles[app.main.blackTile].y));
@@ -178,9 +177,6 @@ app.main = {
                 //move both tiles in opposite directions
                 app.main.tiles[app.main.blackTile].move("right");
                 app.main.tiles[tile].move("left");
-                
-                //increment blackTile
-                app.main.blackTile = tile;
                 
                 //goto moving state so we update
                 app.main.gameState = app.main.GAME_STATE.MOVING;
@@ -193,9 +189,6 @@ app.main = {
                 app.main.tiles[app.main.blackTile].move("left");
                 app.main.tiles[tile].move("right");
                 
-                //increment blackTile
-                app.main.blackTile = tile;
-                
                 //goto moving state so we update
                 app.main.gameState = app.main.GAME_STATE.MOVING;
             }            
@@ -206,9 +199,6 @@ app.main = {
                 //move both tiles in opposite directions
                 app.main.tiles[app.main.blackTile].move("down");
                 app.main.tiles[tile].move("up");
-                
-                //increment blackTile
-                app.main.blackTile = tile;
                 
                 //goto moving state so we update
                 app.main.gameState = app.main.GAME_STATE.MOVING;            
@@ -221,28 +211,9 @@ app.main = {
                 app.main.tiles[app.main.blackTile].move("up");
                 app.main.tiles[tile].move("down");
                 
-                //increment blackTile
-                app.main.blackTile = tile;
-                
                 //goto moving state so we update
                 app.main.gameState = app.main.GAME_STATE.MOVING;            
             }
-        }
-    },
-
-    switchTiles:function(newSpot,dir){
-        console.log("switch");
-        if(dir==0){
-            var temp = app.main.sortedTiles[app.main.blackTile+newSpot].x;
-            app.main.sortedTiles[app.main.blackTile+newSpot].x = app.main.sortedTiles[app.main.blackTile].x;
-            app.main.sortedTiles[app.main.blackTile].x=temp;
-            app.main.gamestate=app.main.GAME_STATE.MOVING;
-        }
-        else if(dir==1){
-            var temp = app.main.sortedTiles[app.main.blackTile+newSpot].y;
-            app.main.sortedTiles[app.main.blackTile+newSpot].y = app.main.sortedTiles[app.main.blackTile].y;
-            app.main.sortedTiles[app.main.blackTile].y=temp;
-            app.main.gamestate=app.main.GAME_STATE.MOVING;
         }
     },
 
@@ -289,11 +260,11 @@ app.main = {
                     break;
 
                 case "left":
-                    this.x = this.x + 1;
+                    this.x = this.x - 1;
                     break;
 
                 case "right":
-                    this.x = this.x - 1;
+                    this.x = this.x + 1;
                     break;
             }
         };
@@ -667,7 +638,7 @@ app.main = {
     {
         var tile;
         //loop through tiles
-        for(var i = 0; i < app.main.tiles.length - 1; i++)
+        for(var i = 0; i < app.main.tiles.length; i++)
         {
             //save current tile
             var current = app.main.tiles[i];
