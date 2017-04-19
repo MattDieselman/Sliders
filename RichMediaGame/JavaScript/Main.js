@@ -39,7 +39,8 @@ app.main = {
         PLAY : 3,
         PAUSE : 4,
         SOLVED : 5,
-        INITIALIZE: 6
+        INITIALIZE: 6,
+        FIREWORKS:7
     }),
 
     //more properties
@@ -169,9 +170,9 @@ app.main = {
                 var e = this.emitters[i];
                 e.draw(this.ctx);
             }
-            this.ctx.fillStyle="black"
-            this.ctx.rect(0,0,this.WIDHT,this.HEIGHT);   
-            this.ctx.fill();
+            //this.ctx.fillStyle="black"
+           // this.ctx.rect(0,0,this.WIDTH,this.HEIGHT);   
+            //this.ctx.fill();
         }
     },
 
@@ -647,26 +648,35 @@ app.main = {
 
     genParticles:function(){
         var drawSpawner = function(ctx){
-            ctx.save()
-            this.x+=(this.destX-this.x)/this.speed;
-            this.y+=(this.destY-this.y)/this.speed;
+            if(this.life<=0){
 
-            ctx.fillStyle=this.color;
-            ctx.arc(this.x,this.y,3,0,Math.PI,false);
-            ctx.fill();
-            ctx.restore();
+            }
+            else{
+                ctx.save()
+                this.x+=(this.destX-this.x)/this.speed;
+                this.y+=(this.destY-this.y)/this.speed;
 
+                ctx.fillStyle=this.color;
+                ctx.beginPath();
+                ctx.arc(this.x,this.y,3,0,Math.PI,false);
+                ctx.fill();
+                ctx.restore();
+                this.life--;
+            }
+            //if(this.x+2>this.destX&&this.x-2<this.destX&&this.y+2>this.destY&&this.y-2<this.destY){
+
+            //}
         };
-        for(var i=0;i<10;i++){
+        for(var i=0;i<getRandom(10,20);i++){
             var temp = {};
             temp.x=Math.floor(getRandom(0,app.main.WIDTH));
             temp.y=app.main.HEIGHT;
             temp.color = getRandomColor();
-            temp.destX = Math.floor((app.main.WIDTH/2)+getRandom(-30,30));
-            temp.destY = Math.floor((app.main.HEIGHT/2)+getRandom(-30,30));
-            temp.speed=getRandom(10,30);
+            temp.destX = Math.floor(getRandom(0,app.main.WIDTH));
+            temp.destY = Math.floor(getRandom(0,app.main.HEIGHT));
+            temp.speed=getRandom(100,300);
             temp.draw=drawSpawner;
-            temp.life = getRandom(10,20);
+            temp.life = getRandom(300,500);
             Object.seal(temp);
             app.main.emitters.push(temp); 
         }
