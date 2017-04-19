@@ -45,7 +45,7 @@ app.main = {
     //more properties
     tiles: [],
     sortedTiles:[],
-    particles:[],
+    emitters:[],
     blackTile:0,
     numDivs: 1,
     paused: false,
@@ -54,6 +54,7 @@ app.main = {
     tileWidth: this.WIDTH/this.numDivs,
     tileHeight:this.HEIGHT/this.numDivs,
 
+    winBool:false,
     //audio stuff
 
     particleCounter:0,
@@ -88,7 +89,6 @@ app.main = {
         this.ctx = this.canvas.getContext('2d');
 
         this.gameState = this.GAME_STATE.MAIN; //initally start at the main menu
-        
         //clear canvas once before we get started
         this.ctx.fillStyle = "black"; 
         this.ctx.fillRect(0,0,this.WIDTH,this.HEIGHT);
@@ -117,6 +117,12 @@ app.main = {
         // 1) LOOP
         // schedule a call to update()
         this.animationID = requestAnimationFrame(this.update.bind(this));
+
+
+        //winning? win
+        if(this.winBool){
+            this.gameState=this.GAME_STATE.SOLVED;
+        }
 
         // 2) PAUSED?
         // if so, bail out of loop
@@ -161,6 +167,7 @@ app.main = {
         }
         else if(this.gameState == this.GAME_STATE.MOVING)
         {
+
             this.clear(this.ctx);
             
             // ii) draw tiles
@@ -176,7 +183,14 @@ app.main = {
         }
         else if(this.gameState == this.GAME_STATE.SOLVED)
         {
-
+            if(this.winBool){
+                app.main.genParticles();
+            this.winBool=!this.winBool;
+            }
+            
+            this.ctx.fillStyle="black";
+            this.ctx.rect(0,0,this.WIDTH,this.HEIGHT);   
+                this.ctx.fill();
             for(var i = 0; i < this.emitters.length; i++){
                 var e = this.emitters[i];
                 e.draw(this.ctx);
@@ -262,6 +276,13 @@ app.main = {
                 }
             }
         }
+        app.main.winBool=true;
+        for(var i=0;i<app.main.tiles.length;i++){
+            if(app.main.tiles[i].x!=app.main.tiles[i].originX||app.main.tiles[i].y!=app.main.tiles[i].originY){
+                app.main.winBool=false;
+                break;
+            }
+        }
     },
 
     fillText: function(string, x, y, css, color) {
@@ -314,6 +335,7 @@ app.main = {
                     this.x = this.x + 1;
                     break;
             }
+
         };
 
         //a func that we will soon use as a methods
