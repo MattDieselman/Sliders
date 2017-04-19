@@ -39,14 +39,13 @@ app.main = {
         PLAY : 3,
         PAUSE : 4,
         SOLVED : 5,
-        INITIALIZE: 6,
-        FIREWORKS:7
+        INITIALIZE: 6
     }),
 
     //more properties
     tiles: [],
     sortedTiles:[],
-    emitters:[],
+    particles:[],
     blackTile:0,
     numDivs: 1,
     paused: false,
@@ -88,8 +87,8 @@ app.main = {
         this.canvas.height = this.HEIGHT;
         this.ctx = this.canvas.getContext('2d');
 
-        this.gameState = this.GAME_STATE.SOLVED; //initally start at the main menu
-        this.genParticles();
+        this.gameState = this.GAME_STATE.MAIN; //initally start at the main menu
+        
         //clear canvas once before we get started
         this.ctx.fillStyle = "black"; 
         this.ctx.fillRect(0,0,this.WIDTH,this.HEIGHT);
@@ -206,48 +205,62 @@ app.main = {
 //keyboard input
     keyPress:function(e){
         if(app.main.gameState == app.main.GAME_STATE.PLAY){
-            console.log(app.main.blackTile);
-        //console.log(e);
             if(e.char=="a"){
-                if(app.main.blackTile%app.main.numDivs>0){
-                    app.main.switchTiles(-1,0);
-                    app.main.blackTile--;
+                //get tile above blackTile
+                var tile = app.main.findTile((app.main.tiles[app.main.blackTile].x + 1), (app.main.tiles[app.main.blackTile].y));
+
+                if(tile != undefined)
+                {
+                    //move both tiles in opposite directions
+                    app.main.tiles[app.main.blackTile].move("right");
+                    app.main.tiles[tile].move("left");
+
+                    //goto moving state so we update
+                    app.main.gameState = app.main.GAME_STATE.MOVING;
                 }
             }
             if(e.char=="d"){
-                if(app.main.sortedTiles[app.main.blackTile].x<app.main.numDivs){
-                    app.main.switchTiles(1,0);
-                    app.main.blackTile++;
+                //get tile above blackTile
+                var tile = app.main.findTile((app.main.tiles[app.main.blackTile].x - 1), (app.main.tiles[app.main.blackTile].y));
+                
+                if(tile != undefined)
+                {
+                    //move both tiles in opposite directions
+                    app.main.tiles[app.main.blackTile].move("left");
+                    app.main.tiles[tile].move("right");
+
+                    //goto moving state so we update
+                    app.main.gameState = app.main.GAME_STATE.MOVING;
                 }
             }            
             if(e.char=="w"){
-                if(app.main.sortedTiles[app.main.blackTile].y>0){
-                    app.main.switchTiles(-app.main.numDivs,1);
-                    app.main.blackTile-=app.main.numDivs;
+                //get tile above blackTile
+                var tile = app.main.findTile(app.main.tiles[app.main.blackTile].x, (app.main.tiles[app.main.blackTile].y + 1));
+                
+                if(tile != undefined)
+                {
+                    //move both tiles in opposite directions
+                    app.main.tiles[app.main.blackTile].move("up");
+                    app.main.tiles[tile].move("down");
+
+                    //goto moving state so we update
+                    app.main.gameState = app.main.GAME_STATE.MOVING; 
                 }
             }            
             if(e.char=="s"){
-                if(app.main.sortedTiles[app.main.blackTile].y<app.main.numDivs){
-                    app.main.switchTiles(app.main.numDivs,1);
-                    app.main.blackTile+=app.main.numDivs;
-                }                
-            }
-        }
-    },
+                //get tile above blackTile
+                var tile = app.main.findTile(app.main.tiles[app.main.blackTile].x, (app.main.tiles[app.main.blackTile].y - 1));
+                
+                if(tile != undefined)
+                {
+                    //move both tiles in opposite directions
+                    app.main.tiles[app.main.blackTile].move("down");
+                    app.main.tiles[tile].move("up");
 
-    switchTiles:function(newSpot,dir){
-        console.log("switch");
-        if(dir==0){
-            var temp = app.main.sortedTiles[app.main.blackTile+newSpot].x;
-            app.main.sortedTiles[app.main.blackTile+newSpot].x = app.main.sortedTiles[app.main.blackTile].x;
-            app.main.sortedTiles[app.main.blackTile].x=temp;
-            app.main.gamestate=app.main.GAME_STATE.MOVING;
-        }
-        else if(dir==1){
-            var temp = app.main.sortedTiles[app.main.blackTile+newSpot].y;
-            app.main.sortedTiles[app.main.blackTile+newSpot].y = app.main.sortedTiles[app.main.blackTile].y;
-            app.main.sortedTiles[app.main.blackTile].y=temp;
-            app.main.gamestate=app.main.GAME_STATE.MOVING;
+                    //goto moving state so we update
+                    app.main.gameState = app.main.GAME_STATE.MOVING;
+                }
+            }
         }
     },
 
@@ -294,11 +307,11 @@ app.main = {
                     break;
 
                 case "left":
-                    this.x = this.x + 1;
+                    this.x = this.x - 1;
                     break;
 
                 case "right":
-                    this.x = this.x - 1;
+                    this.x = this.x + 1;
                     break;
             }
         };
@@ -666,9 +679,28 @@ app.main = {
                 }
             }
         }
-        console.log(this.sortedTiles);
-        //sort new array for movement
-
+    },
+    
+    findTile: function(x, y)
+    {
+        var tile;
+        //loop through tiles
+        for(var i = 0; i < app.main.tiles.length; i++)
+        {
+            //save current tile
+            var current = app.main.tiles[i];
+            
+            //compare current tiles xy pos with xy given
+            if(current.x == x && current.y == y)
+            {
+                //save the tile that matches and break out of loop
+                tile = i;
+                return tile;
+            }
+        }
+        
+        //return the tiles incrementer that matches
+        return tile;
     },
     genChildParticles:function(x,y){
         app.main.playSounds("child");
@@ -752,6 +784,5 @@ app.main = {
             Object.seal(temp);
             app.main.emitters.push(temp); 
         }
-
     }
 }; // end app.main
