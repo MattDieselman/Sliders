@@ -75,12 +75,12 @@ app.main = {
         document.addEventListener("keydown",this.keyPress,false);
         document.addEventListener("keydown",this.keyPress,false);
         var audioElement = document.querySelector('audio');
-
+        audioElement.loop=true;
         //create the sounds
             audioElement.src = "JavaScript/resources/Upbeat Forever.mp3";
             audioElement.play();
             audioElement.volume = 0.2;
-            console.log(audioElement.src)
+           // console.log(audioElement.src)
         
         // initialize properties
         this.canvas = document.querySelector('canvas');
