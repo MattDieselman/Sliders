@@ -53,7 +53,11 @@ app.main = {
     openTile: null, //variable for us to have a reference to the open tile space
     tileWidth: this.WIDTH/this.numDivs,
     tileHeight:this.HEIGHT/this.numDivs,
-        
+
+    //audio stuff
+
+    particleCounter:0,
+    particleCounterMax:0,
     //buttons
     btnPlay: null,
     btnAddDiv: null,
@@ -69,7 +73,14 @@ app.main = {
 
         document.addEventListener("keydown",this.keyPress,false);
         document.addEventListener("keydown",this.keyPress,false);
-
+        var audioElement = document.querySelector('#bg');
+        audioElement.loop=true;
+        //create the sounds
+            audioElement.src = "JavaScript/resources/Upbeat Forever.mp3";
+            audioElement.play();
+            audioElement.volume = 0.2;
+           // console.log(audioElement.src)
+        
         // initialize properties
         this.canvas = document.querySelector('canvas');
         this.canvas.width = this.WIDTH;
@@ -163,9 +174,33 @@ app.main = {
             //update gamestate
             this.nextGameState();
         }
+        else if(this.gameState == this.GAME_STATE.SOLVED)
+        {
+
+            for(var i = 0; i < this.emitters.length; i++){
+                var e = this.emitters[i];
+                e.draw(this.ctx);
+            }
+            //console.log(this.particleCounter+"/"+this.particleCounterMax);
+            if(this.particleCounterMax==this.particleCounter){
+                this.ctx.fillStyle="black"
+                this.ctx.rect(0,0,this.WIDTH,this.HEIGHT);   
+                this.ctx.fill();
+                this.gameState=this.GAME_STATE.MAIN;
+            }
+        }
     },
 
     //HELPER METHODS ============================================================================================================================================\
+
+    //play sounds
+    playSounds:function(sound){
+        var audioElement2 = document.querySelector('#sef');
+            audioElement2.loop=false;
+            audioElement2.src = "JavaScript/resources/"+sound+".wav";
+            audioElement2.play();
+            audioElement2.volume = 0.4;
+    },
 
 //keyboard input
     keyPress:function(e){
@@ -667,9 +702,87 @@ app.main = {
         //return the tiles incrementer that matches
         return tile;
     },
+    genChildParticles:function(x,y){
+        app.main.playSounds("child");
+        var drawChild = function(ctx){
+            if(this.life<=0&&!this.isDead){
+                app.main.particleCounter++;
+                this.isDead=true;
+            }
+            else if(this.isDead);
+            else{
+                ctx.save()
+                this.x+=(this.destX-this.x)/this.speed;
+                this.y+=(this.destY-this.y)/this.speed;
 
+                ctx.fillStyle=this.color;
+                ctx.beginPath();
+                ctx.arc(this.x,this.y,3,0,Math.PI,false);
+                ctx.fill();
+                ctx.restore();
+                this.life--;
+            }
+        };
+        for(var i=0;i<getRandom(3,5);i++){
+            app.main.particleCounterMax++;
+
+            var temp = {};
+            temp.x=x;
+            temp.y=y;
+            temp.color = getRandomColor();
+            temp.destX = Math.floor(getRandom(x-100,x+100));
+            temp.destY = Math.floor(getRandom(y-100,y+100));
+            temp.speed=getRandom(100,300);
+            temp.draw=drawChild;
+            temp.life = getRandom(300,500);
+            temp.isDead=false;
+            Object.seal(temp);
+            app.main.emitters.push(temp); 
+        }
+    },
     genParticles:function(){
+        app.main.playSounds("firework");
+        var drawSpawner = function(ctx){
+            if(this.isDead);
+            else if(this.life<=-10&&!this.isDead){
+            app.main.particleCounter++;
+                this.isDead=true;
 
+            }
+            else if(this.life<=0&&this.life>-10){
+                app.main.genChildParticles(this.x,this.y);
+                this.life--;
+            }
+            else{
+                ctx.save()
+                this.x+=(this.destX-this.x)/this.speed;
+                this.y+=(this.destY-this.y)/this.speed;
 
+                ctx.fillStyle=this.color;
+                ctx.beginPath();
+                ctx.arc(this.x,this.y,3,0,Math.PI,false);
+                ctx.fill();
+                ctx.restore();
+                this.life--;
+            }
+            //if(this.x+2>this.destX&&this.x-2<this.destX&&this.y+2>this.destY&&this.y-2<this.destY){
+
+            //}
+        };
+        for(var i=0;i<10;i++){
+            app.main.particleCounterMax++;
+            var temp = {};
+            temp.x=Math.floor(getRandom(0,app.main.WIDTH));
+            temp.y=app.main.HEIGHT;
+            temp.color = getRandomColor();
+            temp.destX = Math.floor(getRandom(0,app.main.WIDTH));
+            temp.destY = Math.floor(getRandom(0,app.main.HEIGHT));
+            temp.speed=getRandom(100,300);
+            temp.isDead=false;
+            temp.draw=drawSpawner;
+            temp.life = getRandom(300,500);
+            Object.seal(temp);
+            app.main.emitters.push(temp); 
+        }
     }
 }; // end app.main
