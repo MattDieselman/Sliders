@@ -67,6 +67,8 @@ app.main = {
         console.log("app.main.init() called");
 
         document.addEventListener("keydown",this.keyPress,false);
+        document.addEventListener("keydown",this.keyPress,false);
+
         // initialize properties
         this.canvas = document.querySelector('canvas');
         this.canvas.width = this.WIDTH;
@@ -170,25 +172,25 @@ app.main = {
             console.log(app.main.blackTile);
         //console.log(e);
             if(e.char=="a"){
-                if(app.main.sortedTiles[app.main.blackTile].x!=0){
+                if(app.main.sortedTiles[app.main.blackTile].x>0){
                     app.main.switchTiles(-1);
                     app.main.blackTile--;
                 }
             }
             if(e.char=="d"){
-                if(app.main.sortedTiles[app.main.blackTile].x!=app.main.numDivs){
+                if(app.main.sortedTiles[app.main.blackTile].x<app.main.numDivs){
                     app.main.switchTiles(1);
                     app.main.blackTile++;
                 }
             }            
             if(e.char=="w"){
-                if(app.main.sortedTiles[app.main.blackTile].y!=0){
+                if(app.main.sortedTiles[app.main.blackTile].y>0){
                     app.main.switchTiles(-app.main.numDivs);
                     app.main.blackTile-=app.main.numDivs;
                 }
             }            
             if(e.char=="s"){
-                if(app.main.sortedTiles[app.main.blackTile].y!=app.main.numDivs){
+                if(app.main.sortedTiles[app.main.blackTile].y<app.main.numDivs){
                     app.main.switchTiles(app.main.numDivs);
                     app.main.blackTile+=app.main.numDivs;
                 }                
@@ -197,10 +199,11 @@ app.main = {
     },
 
     switchTiles:function(newSpot){
+        console.log("switch");
         var temp = app.main.sortedTiles[app.main.blackTile+newSpot];
         app.main.sortedTiles[app.main.blackTile+newSpot] = app.main.sortedTiles[app.main.blackTile];
         app.main.sortedTiles[app.main.blackTile]=temp;
-        app.main.GAME_STATE=app.main.GAME_STATE.MOVING;
+        app.main.gamestate=app.main.GAME_STATE.MOVING;
     },
 
     fillText: function(string, x, y, css, color) {
@@ -344,7 +347,7 @@ app.main = {
         //if not, draw the tiles
         for(var i = 0; i < this.tiles.length; i++)
         {
-            var t = this.tiles[i];
+            var t = this.sortedTiles[i];
             if(!t.isLast)t.draw(ctx);
         }
     },
