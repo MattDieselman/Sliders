@@ -54,7 +54,9 @@ app.main = {
     openTile: null, //variable for us to have a reference to the open tile space
     tileWidth: this.WIDTH/this.numDivs,
     tileHeight:this.HEIGHT/this.numDivs,
-        
+
+    particleCounter:0,
+    particleCounterMax:0,
     //buttons
     btnPlay: null,
     btnAddDiv: null,
@@ -170,9 +172,13 @@ app.main = {
                 var e = this.emitters[i];
                 e.draw(this.ctx);
             }
-            //this.ctx.fillStyle="black"
-           // this.ctx.rect(0,0,this.WIDTH,this.HEIGHT);   
-            //this.ctx.fill();
+            //console.log(this.particleCounter+"/"+this.particleCounterMax);
+            if(this.particleCounterMax==this.particleCounter){
+                this.ctx.fillStyle="black"
+                this.ctx.rect(0,0,this.WIDTH,this.HEIGHT);   
+                this.ctx.fill();
+                this.gameState=this.GAME_STATE.MAIN;
+            }
         }
     },
 
@@ -647,8 +653,11 @@ app.main = {
     },
     genChildParticles:function(x,y){
         var drawChild = function(ctx){
-            if(this.life<=0){
+            if(this.life<=0&&!this.isDead){
+                app.main.particleCounter++;
+                this.isDead=true;
             }
+            else if(this.isDead);
             else{
                 ctx.save()
                 this.x+=(this.destX-this.x)/this.speed;
@@ -663,6 +672,8 @@ app.main = {
             }
         };
         for(var i=0;i<getRandom(3,5);i++){
+            app.main.particleCounterMax++;
+
             var temp = {};
             temp.x=x;
             temp.y=y;
@@ -672,13 +683,17 @@ app.main = {
             temp.speed=getRandom(100,300);
             temp.draw=drawChild;
             temp.life = getRandom(300,500);
+            temp.isDead=false;
             Object.seal(temp);
             app.main.emitters.push(temp); 
         }
     },
     genParticles:function(){
         var drawSpawner = function(ctx){
-            if(this.life<=-10){
+            if(this.isDead);
+            else if(this.life<=-10&&!this.isDead){
+            app.main.particleCounter++;
+                this.isDead=true;
 
             }
             else if(this.life<=0&&this.life>-10){
@@ -701,7 +716,8 @@ app.main = {
 
             //}
         };
-        for(var i=0;i<getRandom(10,20);i++){
+        for(var i=0;i<10;i++){
+            app.main.particleCounterMax++;
             var temp = {};
             temp.x=Math.floor(getRandom(0,app.main.WIDTH));
             temp.y=app.main.HEIGHT;
@@ -709,6 +725,7 @@ app.main = {
             temp.destX = Math.floor(getRandom(0,app.main.WIDTH));
             temp.destY = Math.floor(getRandom(0,app.main.HEIGHT));
             temp.speed=getRandom(100,300);
+            temp.isDead=false;
             temp.draw=drawSpawner;
             temp.life = getRandom(300,500);
             Object.seal(temp);
