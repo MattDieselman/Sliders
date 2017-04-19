@@ -174,45 +174,57 @@ app.main = {
                 //get tile above blackTile
                 var tile = app.main.findTile((app.main.tiles[app.main.blackTile].x + 1), (app.main.tiles[app.main.blackTile].y));
 
-                //move both tiles in opposite directions
-                app.main.tiles[app.main.blackTile].move("right");
-                app.main.tiles[tile].move("left");
-                
-                //goto moving state so we update
-                app.main.gameState = app.main.GAME_STATE.MOVING;
+                if(tile != undefined)
+                {
+                    //move both tiles in opposite directions
+                    app.main.tiles[app.main.blackTile].move("right");
+                    app.main.tiles[tile].move("left");
+
+                    //goto moving state so we update
+                    app.main.gameState = app.main.GAME_STATE.MOVING;
+                }
             }
             if(e.char=="d"){
                 //get tile above blackTile
                 var tile = app.main.findTile((app.main.tiles[app.main.blackTile].x - 1), (app.main.tiles[app.main.blackTile].y));
-
-                //move both tiles in opposite directions
-                app.main.tiles[app.main.blackTile].move("left");
-                app.main.tiles[tile].move("right");
                 
-                //goto moving state so we update
-                app.main.gameState = app.main.GAME_STATE.MOVING;
+                if(tile != undefined)
+                {
+                    //move both tiles in opposite directions
+                    app.main.tiles[app.main.blackTile].move("left");
+                    app.main.tiles[tile].move("right");
+
+                    //goto moving state so we update
+                    app.main.gameState = app.main.GAME_STATE.MOVING;
+                }
             }            
             if(e.char=="w"){
                 //get tile above blackTile
                 var tile = app.main.findTile(app.main.tiles[app.main.blackTile].x, (app.main.tiles[app.main.blackTile].y + 1));
-
-                //move both tiles in opposite directions
-                app.main.tiles[app.main.blackTile].move("down");
-                app.main.tiles[tile].move("up");
                 
-                //goto moving state so we update
-                app.main.gameState = app.main.GAME_STATE.MOVING;            
+                if(tile != undefined)
+                {
+                    //move both tiles in opposite directions
+                    app.main.tiles[app.main.blackTile].move("up");
+                    app.main.tiles[tile].move("down");
+
+                    //goto moving state so we update
+                    app.main.gameState = app.main.GAME_STATE.MOVING; 
+                }
             }            
             if(e.char=="s"){
                 //get tile above blackTile
                 var tile = app.main.findTile(app.main.tiles[app.main.blackTile].x, (app.main.tiles[app.main.blackTile].y - 1));
-
-                //move both tiles in opposite directions
-                app.main.tiles[app.main.blackTile].move("up");
-                app.main.tiles[tile].move("down");
                 
-                //goto moving state so we update
-                app.main.gameState = app.main.GAME_STATE.MOVING;            
+                if(tile != undefined)
+                {
+                    //move both tiles in opposite directions
+                    app.main.tiles[app.main.blackTile].move("down");
+                    app.main.tiles[tile].move("up");
+
+                    //goto moving state so we update
+                    app.main.gameState = app.main.GAME_STATE.MOVING;
+                }
             }
         }
     },
