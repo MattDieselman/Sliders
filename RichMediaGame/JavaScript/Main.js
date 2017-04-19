@@ -39,14 +39,13 @@ app.main = {
         PLAY : 3,
         PAUSE : 4,
         SOLVED : 5,
-        INITIALIZE: 6,
-        FIREWORKS:7
+        INITIALIZE: 6
     }),
 
     //more properties
     tiles: [],
     sortedTiles:[],
-    emitters:[],
+    particles:[],
     blackTile:0,
     numDivs: 1,
     paused: false,
@@ -77,8 +76,8 @@ app.main = {
         this.canvas.height = this.HEIGHT;
         this.ctx = this.canvas.getContext('2d');
 
-        this.gameState = this.GAME_STATE.SOLVED; //initally start at the main menu
-        this.genParticles();
+        this.gameState = this.GAME_STATE.MAIN; //initally start at the main menu
+        
         //clear canvas once before we get started
         this.ctx.fillStyle = "black"; 
         this.ctx.fillRect(0,0,this.WIDTH,this.HEIGHT);
@@ -164,16 +163,6 @@ app.main = {
             //update gamestate
             this.nextGameState();
         }
-        else if(this.gameState == this.GAME_STATE.SOLVED)
-        {
-            for(var i = 0; i < this.emitters.length; i++){
-                var e = this.emitters[i];
-                e.draw(this.ctx);
-            }
-            //this.ctx.fillStyle="black"
-           // this.ctx.rect(0,0,this.WIDTH,this.HEIGHT);   
-            //this.ctx.fill();
-        }
     },
 
     //HELPER METHODS ============================================================================================================================================\
@@ -181,31 +170,62 @@ app.main = {
 //keyboard input
     keyPress:function(e){
         if(app.main.gameState == app.main.GAME_STATE.PLAY){
-            console.log(app.main.blackTile);
         //console.log(e);
             if(e.char=="a"){
-                if(app.main.blackTile%app.main.numDivs>0){
-                    app.main.switchTiles(-1,0);
-                    app.main.blackTile--;
-                }
+                //get tile above blackTile
+                var tile = app.main.findTile((app.main.tiles[app.main.blackTile].x + 1), (app.main.tiles[app.main.blackTile].y));
+
+                //move both tiles in opposite directions
+                app.main.tiles[app.main.blackTile].move("right");
+                app.main.tiles[tile].move("left");
+                
+                //increment blackTile
+                app.main.blackTile = tile;
+                
+                //goto moving state so we update
+                app.main.gameState = app.main.GAME_STATE.MOVING;
             }
             if(e.char=="d"){
-                if(app.main.sortedTiles[app.main.blackTile].x<app.main.numDivs){
-                    app.main.switchTiles(1,0);
-                    app.main.blackTile++;
-                }
+                //get tile above blackTile
+                var tile = app.main.findTile((app.main.tiles[app.main.blackTile].x - 1), (app.main.tiles[app.main.blackTile].y));
+
+                //move both tiles in opposite directions
+                app.main.tiles[app.main.blackTile].move("left");
+                app.main.tiles[tile].move("right");
+                
+                //increment blackTile
+                app.main.blackTile = tile;
+                
+                //goto moving state so we update
+                app.main.gameState = app.main.GAME_STATE.MOVING;
             }            
             if(e.char=="w"){
-                if(app.main.sortedTiles[app.main.blackTile].y>0){
-                    app.main.switchTiles(-app.main.numDivs,1);
-                    app.main.blackTile-=app.main.numDivs;
-                }
+                //get tile above blackTile
+                var tile = app.main.findTile(app.main.tiles[app.main.blackTile].x, (app.main.tiles[app.main.blackTile].y + 1));
+
+                //move both tiles in opposite directions
+                app.main.tiles[app.main.blackTile].move("down");
+                app.main.tiles[tile].move("up");
+                
+                //increment blackTile
+                app.main.blackTile = tile;
+                
+                //goto moving state so we update
+                app.main.gameState = app.main.GAME_STATE.MOVING;            
             }            
             if(e.char=="s"){
-                if(app.main.sortedTiles[app.main.blackTile].y<app.main.numDivs){
-                    app.main.switchTiles(app.main.numDivs,1);
-                    app.main.blackTile+=app.main.numDivs;
-                }                
+                //get tile above blackTile
+                var tile = app.main.findTile(app.main.tiles[app.main.blackTile].x, (app.main.tiles[app.main.blackTile].y - 1));
+
+                //move both tiles in opposite directions
+                app.main.tiles[app.main.blackTile].move("up");
+                app.main.tiles[tile].move("down");
+                
+                //increment blackTile
+                app.main.blackTile = tile;
+                
+                //goto moving state so we update
+                app.main.gameState = app.main.GAME_STATE.MOVING;            
             }
         }
     },
@@ -641,45 +661,32 @@ app.main = {
                 }
             }
         }
-        console.log(this.sortedTiles);
-        //sort new array for movement
-
+    },
+    
+    findTile: function(x, y)
+    {
+        var tile;
+        //loop through tiles
+        for(var i = 0; i < app.main.tiles.length - 1; i++)
+        {
+            //save current tile
+            var current = app.main.tiles[i];
+            
+            //compare current tiles xy pos with xy given
+            if(current.x == x && current.y == y)
+            {
+                //save the tile that matches and break out of loop
+                tile = i;
+                return tile;
+            }
+        }
+        
+        //return the tiles incrementer that matches
+        return tile;
     },
 
     genParticles:function(){
-        var drawSpawner = function(ctx){
-            if(this.life<=0){
 
-            }
-            else{
-                ctx.save()
-                this.x+=(this.destX-this.x)/this.speed;
-                this.y+=(this.destY-this.y)/this.speed;
-
-                ctx.fillStyle=this.color;
-                ctx.beginPath();
-                ctx.arc(this.x,this.y,3,0,Math.PI,false);
-                ctx.fill();
-                ctx.restore();
-                this.life--;
-            }
-            //if(this.x+2>this.destX&&this.x-2<this.destX&&this.y+2>this.destY&&this.y-2<this.destY){
-
-            //}
-        };
-        for(var i=0;i<getRandom(10,20);i++){
-            var temp = {};
-            temp.x=Math.floor(getRandom(0,app.main.WIDTH));
-            temp.y=app.main.HEIGHT;
-            temp.color = getRandomColor();
-            temp.destX = Math.floor(getRandom(0,app.main.WIDTH));
-            temp.destY = Math.floor(getRandom(0,app.main.HEIGHT));
-            temp.speed=getRandom(100,300);
-            temp.draw=drawSpawner;
-            temp.life = getRandom(300,500);
-            Object.seal(temp);
-            app.main.emitters.push(temp); 
-        }
 
     }
 }; // end app.main
