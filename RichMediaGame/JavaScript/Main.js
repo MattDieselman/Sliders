@@ -645,11 +645,45 @@ app.main = {
         //sort new array for movement
 
     },
+    genChildParticles:function(x,y){
+        var drawChild = function(ctx){
+            if(this.life<=0){
+            }
+            else{
+                ctx.save()
+                this.x+=(this.destX-this.x)/this.speed;
+                this.y+=(this.destY-this.y)/this.speed;
 
+                ctx.fillStyle=this.color;
+                ctx.beginPath();
+                ctx.arc(this.x,this.y,3,0,Math.PI,false);
+                ctx.fill();
+                ctx.restore();
+                this.life--;
+            }
+        };
+        for(var i=0;i<getRandom(3,5);i++){
+            var temp = {};
+            temp.x=x;
+            temp.y=y;
+            temp.color = getRandomColor();
+            temp.destX = Math.floor(getRandom(x-100,x+100));
+            temp.destY = Math.floor(getRandom(y-100,y+100));
+            temp.speed=getRandom(100,300);
+            temp.draw=drawChild;
+            temp.life = getRandom(300,500);
+            Object.seal(temp);
+            app.main.emitters.push(temp); 
+        }
+    },
     genParticles:function(){
         var drawSpawner = function(ctx){
-            if(this.life<=0){
+            if(this.life<=-10){
 
+            }
+            else if(this.life<=0&&this.life>-10){
+                app.main.genChildParticles(this.x,this.y);
+                this.life--;
             }
             else{
                 ctx.save()
